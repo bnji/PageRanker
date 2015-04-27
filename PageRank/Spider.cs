@@ -181,11 +181,14 @@ namespace bendot
             WebPageInfo result = null;
             using (var response = GetWebResponse(url, loadContent))
             {
-                OnWebResponseEvent(this, new WebResponseEventArgs()
+                if (OnWebResponseEvent != null)
                 {
-                    Url = url,
-                    Response = response
-                });
+                    OnWebResponseEvent(this, new WebResponseEventArgs()
+                    {
+                        Url = url,
+                        Response = response
+                    });
+                }
                 if (response != null && response.ContentLength > 0)
                 {
                     using (var sr = new StreamReader(response.GetResponseStream()))

@@ -20,7 +20,7 @@ namespace demo.bendot
         {
             Console.Write("Enter a url to crawl: ");
             String urlString = Console.ReadLine();
-            if (urlString.StartsWith("www."))
+            if (urlString.StartsWith("www.") || !urlString.StartsWith("http://"))
             {
                 urlString = "http://" + urlString;
             }
@@ -37,26 +37,26 @@ namespace demo.bendot
             {
                 StartUrl = url,
                 UrlType = UriKind.RelativeOrAbsolute,
-                OnlySameDomain = false, 
+                OnlySameDomain = true,
                 MaxDepth = 3,
                 AllowedContentTypes = new string[] { MediaTypeNames.Text.Html, MediaTypeNames.Text.Plain, MediaTypeNames.Text.Xml, MediaTypeNames.Application.Pdf },
                 IsDebugMode = false
             });
-            spider.OnWebResponseEvent += (o, e) =>
-            {
-                if (e.Response == null)
-                {
-                    Console.WriteLine("0 bytes received from " + e.Url.AbsoluteUri);
-                }
-                else
-                {
-                    Console.WriteLine(e.Response.ContentLength + " bytes received from " + e.Url.AbsoluteUri);
-                }
-            };
-            spider.OnAddEdgeEvent += (o, e) =>
-            {
-                Console.WriteLine("Added " + e.Edge.Target.Url.AbsoluteUri);
-            };
+            //spider.OnWebResponseEvent += (o, e) =>
+            //{
+            //    if (e.Response == null)
+            //    {
+            //        Console.WriteLine("0 bytes received from " + e.Url.AbsoluteUri);
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine(e.Response.ContentLength + " bytes received from " + e.Url.AbsoluteUri);
+            //    }
+            //};
+            //spider.OnAddEdgeEvent += (o, e) =>
+            //{
+            //    Console.WriteLine("Added " + e.Edge.Target.Url.AbsoluteUri);
+            //};
             Graph graph = spider.Crawl();
             Instance.PageRank = new PageRanker(graph);
             if (Instance.PageRank.Graph.Edges.Count() == 0)
@@ -65,22 +65,30 @@ namespace demo.bendot
             }
             else
             {
-                IEnumerable<IEdge<WebPageInfo>> edges = Instance.PageRank.Graph.Edges;
+                IList<IEdge<WebPageInfo>> edges = Instance.PageRank.Graph.Edges.ToList();
                 StringBuilder sitemapData = new StringBuilder();
-                sitemapData.AppendLine("The web page " + url + " has " + edges.Count() + " links which are displayed below:");
+                sitemapData.AppendLine(url + " - " + edges.Count() + " links.");
+                for (int i = 0; i < edges.Count(); i++)
+                {
+                    var edge = edges[i];
+                    sitemapData.AppendLine((" " + (i + 1)).PadLeft(3) + ": " + edge.Target.Url.AbsoluteUri);
+                }
                 sitemapData.AppendLine("");
                 foreach (Edge<WebPageInfo> edge in edges)
                 {
-                    sitemapData.AppendLine("Source:");
-                    sitemapData.AppendLine(" > URL:\t\t" + edge.Source.Url.AbsoluteUri);
-                    sitemapData.AppendLine(" > Title:\t" + edge.Source.PageTitle);
-                    sitemapData.AppendLine("Target:");
-                    sitemapData.AppendLine(" > URL:\t\t" + edge.Target.Url.AbsoluteUri);
-                    sitemapData.AppendLine(" > Title:\t" + edge.Target.PageTitle);
-                    sitemapData.AppendLine(" > Outgoing links:" + edge.Target.OutgoingLinks.Count);
-                    foreach (var item in edge.Target.OutgoingLinks)
+                    //sitemapData.AppendLine("Source:");
+                    //sitemapData.AppendLine(" > URL:\t\t" + edge.Source.Url.AbsoluteUri);
+                    //sitemapData.AppendLine(" > Title:\t" + edge.Source.PageTitle);
+                    //sitemapData.AppendLine("Target:");
+                    //sitemapData.AppendLine(" > URL:\t\t" + edge.Target.Url.AbsoluteUri);
+                    //sitemapData.AppendLine(" > Title:\t" + edge.Target.PageTitle);
+                    //sitemapData.AppendLine(" > Outgoing links:" + edge.Target.OutgoingLinks.Count);
+                    sitemapData.AppendLine(edge.Target.Url.AbsoluteUri + " - " + edge.Target.OutgoingLinks.Count + " links.");
+
+                    for (int i = 0; i < edge.Target.OutgoingLinks.Count; i++)
                     {
-                        sitemapData.AppendLine("\t > " + item.AbsoluteUri);
+                        var item = edge.Target.OutgoingLinks[i];
+                        sitemapData.AppendLine((" " + (i + 1)).PadLeft(3) + ": " + item.AbsoluteUri);
                     }
                     sitemapData.AppendLine("");
                 }
@@ -88,7 +96,7 @@ namespace demo.bendot
                 var pageRankData = new StringBuilder();
                 foreach (WebPageInfo pr in Instance.PageRank.PageRankList)
                 {
-                    pageRankData.AppendLine(pr.Url.AbsoluteUri + " has a PageRank score of " + pr.Score);
+                    pageRankData.AppendLine(pr.Url.AbsoluteUri + ". PageRank: " + pr.Score);
                     //PageRanker.TotalScore += pr.Score;
                 }
                 pageRankData.AppendLine("PageRank Total: " + Instance.PageRank.TotalScore);
@@ -97,13 +105,11 @@ namespace demo.bendot
                 Console.WriteLine(pageRankData.ToString());
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "sitemap_" + DateTime.Now.Ticks + ".txt"), sitemapData.ToString());
                 File.WriteAllText(Path.Combine(Environment.CurrentDirectory, "pagerank_" + DateTime.Now.Ticks + ".txt"), pageRankData.ToString());
-                
+
             }
-            EndProgram:
+        EndProgram:
             Console.WriteLine("Press <any> key to exit...");
             Console.ReadLine();
         }
-
-        
     }
 }
