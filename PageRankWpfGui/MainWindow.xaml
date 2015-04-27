@@ -1,0 +1,116 @@
+﻿<Window x:Class="PageRankWpfGui.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:graphsharp="clr-namespace:GraphSharp.Controls;assembly=GraphSharp.Controls"
+        xmlns:local="clr-namespace:PageRankWpfGui"
+        xmlns:zoom="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"        
+        Name="root"
+        Title="Website Crawler and PageRanker" Height="480" Width="720">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="400*"/>
+            <RowDefinition Height="80*"/>
+        </Grid.RowDefinitions>
+        <Label Content="Start URL:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
+        <TextBox x:Name="TxtStartUrl" Height="23" Margin="77,10,276,0" TextWrapping="NoWrap" Text="http://sprotin.azurewebsites.net/pagerank/index.html" VerticalAlignment="Top" VerticalContentAlignment="Center" KeyDown="TxtStartUrl_KeyDown" TextChanged="TxtStartUrl_TextChanged"/>
+        <Button x:Name="BtnCrawl" Content="Crawl" Margin="0,10,131,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="60" Click="BtnCrawl_Click" Height="23"/>
+        <ComboBox Name="CmbMaxDepth" Margin="0,11,101,0" VerticalAlignment="Top" HorizontalAlignment="Right" Width="25" Visibility="Hidden"/>
+        <GroupBox Grid.Row="1" Header="Debug outuput log">
+            <TextBox Name="TxtOutput" TextWrapping="Wrap" IsReadOnly="True" AcceptsReturn="True"/>
+        </GroupBox>
+        <Button x:Name="BtnPageRank" Content="Calculate PageRank" Margin="0,10,10,0" VerticalAlignment="Top" Height="23" Click="BtnPageRank_Click" HorizontalAlignment="Right" Width="116"/>
+        <TabControl x:Name="TabControl1" Margin="10,41,10,10">
+            <TabItem Name="Webgraph" Header="Web Graph">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid CanUserSortColumns="True" Background="LightGray" RowBackground="LightSteelBlue" AlternatingRowBackground="LightSkyBlue" x:Name="GraphOutput" AutoGenerateColumns="False" ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=Default}" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Width="115" Binding="{Binding SourcePageTitle}" Header="Source"/>
+                            <DataGridHyperlinkColumn Width="300*" Binding="{Binding TargetUrl}" Header="Target URL"/>
+                            <DataGridTextColumn Width="55*" Binding="{Binding ContentType}" Header="Type"/>
+                            <DataGridTextColumn Width="115" Binding="{Binding TargetPageTitle}" Header="Target"/>
+                            <DataGridTextColumn Width="90" Binding="{Binding TargetPageOutgoingLinkCount}" Header="Outgoing links"/>
+                            <DataGridTextColumn Width="65" Binding="{Binding PageRankScore}" Header="PageRank"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="PageRanking" Header="Page Ranking">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid CanUserSortColumns="True" Background="LightGray" RowBackground="LightSteelBlue" AlternatingRowBackground="LightSkyBlue" x:Name="PageRankOutput" AutoGenerateColumns="False" ItemsSource="{Binding Mode=OneWay, UpdateSourceTrigger=Default}" IsReadOnly="True">
+                        <DataGrid.Columns>
+                            <DataGridHyperlinkColumn Width="500*" Binding="{Binding Url}" Header="URL"/>
+                            <DataGridTextColumn Width="100" Binding="{Binding Score}" Header="Score"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </TabItem>
+            <TabItem Name="GraphVisualization" Header="Graph Vizualization">
+                <Grid Background="#FFE5E5E5" x:Name="graphContainer">
+                    <zoom:ZoomControl Grid.Row="1"  Zoom="1" ZoomBoxOpacity="0.5" Background="#ff656565">
+                        <local:WebPageGraphLayout x:Name="Graph1" Margin="10" />
+                                                <!--"{Binding Path=GraphToVisualize}"
+                                                LayoutAlgorithmType="{Binding Path=LayoutAlgorithmType, Mode=OneWay}"
+                                                OverlapRemovalAlgorithmType="FSA"/>-->
+                    </zoom:ZoomControl>
+                </Grid>
+            </TabItem>
+            <TabItem Name="TabSettings" Header="Settings">
+                <Grid FlowDirection="LeftToRight" Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="219"></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Label Grid.Row="0" Grid.Column="0" Content="Only crawl URLs on the same domain?"/>
+                    <CheckBox x:Name="chkOnlySameDomain" Grid.Row="0" Grid.Column="1" Content="Yes" VerticalAlignment="Center"/>
+
+                    <Label Grid.Row="1" Grid.Column="0" Content="Only absolute url's?"/>
+                    <CheckBox x:Name="ChkOnlyAbsolutePath" Grid.Row="1" Grid.Column="1" Content="Yes" VerticalAlignment="Center" />
+
+                    <Label Grid.Row="2" Grid.Column="0" Content="Damping factor:"/>
+                    <TextBox x:Name="TxtDampingFacor" Grid.Row="2" Grid.Column="1"  HorizontalAlignment="Left" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Width="35" Height="20" TextChanged="DampingFacor_TextChanged_1">0.85</TextBox>
+
+                    <Label Grid.Row="3" Grid.Column="0" Content="Allowed ContentType:"/>
+
+                    <Grid Grid.Row="3" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="7*"></ColumnDefinition>
+                            <ColumnDefinition Width="56"></ColumnDefinition>
+                            <ColumnDefinition Width="57"></ColumnDefinition>
+                            <ColumnDefinition Width="64"></ColumnDefinition>
+                            <ColumnDefinition Width="2*"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="CmbAllowedContentTypes" Grid.Row="0" Grid.Column="0" Width="200" HorizontalAlignment="Left" Margin="0,2,0,3"/>
+                        <TextBox x:Name="TxtNewAllowedContentType" Grid.Row="0" Grid.Column="0" Width="200" HorizontalAlignment="Left" Visibility="Hidden" TextChanged="TxtNewAllowedContentType_TextChanged_1" Margin="0,2,0,3"/>
+                        <Button Grid.Row="0" Grid.Column="1" x:Name="BtnAddAllowedContentType" Content="Add" Click="BtnAddAllowedContentType_Click_1" HorizontalAlignment="Left" Width="50" Margin="0,2,0,3" />
+                        <Button Grid.Row="0" Grid.Column="2" x:Name="BtnCreateAllowedContentType" Content="Create" Click="BtnCreateAllowedContentType_Click_1" HorizontalAlignment="Left" Width="50" Visibility="Visible" IsEnabled="False" Margin="0,2,0,3" />
+                        <Button Grid.Row="0" Grid.Column="3" x:Name="BtnRemoveAllowedContentType" Content="Remove" Click="BtnRemoveAllowedContentType_Click_1" HorizontalAlignment="Left" Width="50" Margin="0,2,0,3" />
+                    </Grid>
+
+                    <Label Grid.Row="4" Grid.Column="0" Content="Start URL:" />
+                    <Grid Grid.Row="4" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300*"></ColumnDefinition>
+                            <ColumnDefinition Width="50"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <TextBox Grid.Row="0" Grid.Column="0" Height="20" x:Name="TxtCurrentStartUrl" Text="" />
+                        <Button Grid.Row="0" Grid.Column="1" x:Name="BtnSetStartUrl" Content="Set" Click="BtnSetStartUrl_Click_1" HorizontalAlignment="Left" Width="50" Margin="0,2,0,3" />
+                    </Grid>
+                    
+                    <Button Grid.Row="5" Grid.Column="1" x:Name="SaveSettings" Content="Save" HorizontalAlignment="Left" Width="50" Height="20" Click="SaveSettings_Click_1" />
+                    
+                </Grid>
+            </TabItem>
+        </TabControl>
+        <Button Content="Open File" x:Name="OpenFile" Margin="0,10,196,0" VerticalAlignment="Top" Height="23" Click="OpenFile_Click" HorizontalAlignment="Right" Width="75"/>
+
+    </Grid>
+</Window>

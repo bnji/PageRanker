@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PageRankDemo", "PageRankDemo\PageRankDemo.csproj", "{7F11F53C-EF8D-4A9E-863A-D880EBD83AAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PageRankWpfGui", "PageRankWpfGui\PageRankWpfGui.csproj", "{0A519E43-454B-4B11-9043-BF4DE70336B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PageRank", "PageRank\PageRank.csproj", "{933E1114-1CE5-4EB4-B3D1-DF68C1FDAC49}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F11F53C-EF8D-4A9E-863A-D880EBD83AAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F11F53C-EF8D-4A9E-863A-D880EBD83AAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F11F53C-EF8D-4A9E-863A-D880EBD83AAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F11F53C-EF8D-4A9E-863A-D880EBD83AAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A519E43-454B-4B11-9043-BF4DE70336B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A519E43-454B-4B11-9043-BF4DE70336B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A519E43-454B-4B11-9043-BF4DE70336B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A519E43-454B-4B11-9043-BF4DE70336B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{933E1114-1CE5-4EB4-B3D1-DF68C1FDAC49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{933E1114-1CE5-4EB4-B3D1-DF68C1FDAC49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{933E1114-1CE5-4EB4-B3D1-DF68C1FDAC49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{933E1114-1CE5-4EB4-B3D1-DF68C1FDAC49}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
